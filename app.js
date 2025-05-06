@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const mainRouter = require('./routes/index')
 
 const app = express();
 
@@ -11,7 +12,7 @@ mongoose
         console.log('connected to DB');
     })
     .catch((e) => console.error(e));
-
+app.use("/", mainRouter);
 app.listen(PORT, ()=> {
     console.log(`listening on port ${PORT}`);
 });
