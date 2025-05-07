@@ -1,4 +1,6 @@
 const User = require('../models/user');
+const { INVALID_DATA_ERROR_CODE, NO_DATA_ERROR_CODE, DEFAULT_ERROR_CODE } = require("../utils/errors");
+
 
 const getUsers = (req, res) => {
     User.find({})
@@ -20,9 +22,9 @@ const createUser = (req, res) => {
         .catch((err) => {
             console.error(err);
             if(err.name === "ValidationError"){
-                return res.status(400).send({message: err.message});
+                return res.status(INVALID_DATA_ERROR_CODE).send({message: err.message});
             }
-            return res.status(500).send({message: err.message});
+            return res.status(DEFAULT_ERROR_CODE).send({message: err.message});
         });
 };
 
@@ -36,12 +38,12 @@ const getUser = (req, res) => {
         .catch((err) => {
             console.error(err);
             if(err.name === "DocumentNotFoundError"){
-                return res.status(404).send({message: err.message});
+                return res.status(NO_DATA_ERROR_CODE).send({message: err.message});
             }
             if(err.name === "CastError"){
-                return res.status(400).send({message: err.message});
+                return res.status(INVALID_DATA_ERROR_CODE).send({message: err.message});
             }
-            return res.status(500).send({message: err.message});
+            return res.status(DEFAULT_ERROR_CODE).send({message: err.message});
         });
 }
 module.exports = {getUsers, createUser, getUser};

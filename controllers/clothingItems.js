@@ -25,6 +25,7 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((err) => {
+      console.error(err);
       res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
     });
 };
@@ -38,6 +39,7 @@ const updateItem = (req, res) => {
       res.status(200).send({ data: item });
     })
     .catch((err) => {
+      console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(NO_DATA_ERROR_CODE).send({ message: err.message });
       }
@@ -55,6 +57,7 @@ const deleteItem = (req, res) => {
       res.status(204).send({});
     })
     .catch((err) => {
+      console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(NO_DATA_ERROR_CODE).send({ message: err.message });
       }
