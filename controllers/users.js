@@ -1,7 +1,6 @@
 const User = require('../models/user');
 
 const getUsers = (req, res) => {
-    console.log("IN CONTROLLER");
     User.find({})
         .then((users)=>{
             res.send(users)
@@ -13,7 +12,6 @@ const getUsers = (req, res) => {
 };
 
 const createUser = (req, res) => {
-    console.log("WITHIN CREATE USER");
     const {name, avatar} = req.body;
     User.create({name, avatar})
         .then((user) => {
