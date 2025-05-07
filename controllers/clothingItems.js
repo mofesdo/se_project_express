@@ -1,5 +1,9 @@
 const ClothingItem = require("../models/clothingItems");
-const { INVALID_DATA_ERROR_CODE, NO_DATA_ERROR_CODE, DEFAULT_ERROR_CODE } = require("../utils/errors");
+const {
+  INVALID_DATA_ERROR_CODE,
+  NO_DATA_ERROR_CODE,
+  DEFAULT_ERROR_CODE,
+} = require("../utils/errors");
 
 const createItem = (req, res) => {
   console.log(req);
@@ -15,7 +19,9 @@ const createItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
+        return res
+          .status(INVALID_DATA_ERROR_CODE)
+          .send({ message: err.message });
       }
       return res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
     });
@@ -44,7 +50,9 @@ const updateItem = (req, res) => {
         return res.status(NO_DATA_ERROR_CODE).send({ message: err.message });
       }
       if (err.name === "CastError") {
-        return res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
+        return res
+          .status(INVALID_DATA_ERROR_CODE)
+          .send({ message: err.message });
       }
       return res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
     });
@@ -53,8 +61,8 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => {
-      res.status(204).send({});
+    .then(() => {
+      res.status(200).send({});
     })
     .catch((err) => {
       console.error(err);
@@ -62,10 +70,66 @@ const deleteItem = (req, res) => {
         return res.status(NO_DATA_ERROR_CODE).send({ message: err.message });
       }
       if (err.name === "CastError") {
-        return res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
+        return res
+          .status(INVALID_DATA_ERROR_CODE)
+          .send({ message: err.message });
       }
       return res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
     });
 };
 
-module.exports = { createItem, getItems, updateItem, deleteItem };
+const likeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
+    { new: true }
+  )
+    .orFail()
+    .then(() => {
+      res.status(200).send({});
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NO_DATA_ERROR_CODE).send({ message: err.message });
+      }
+      if (err.name === "CastError") {
+        return res
+          .status(INVALID_DATA_ERROR_CODE)
+          .send({ message: err.message });
+      }
+      return res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+    });
+};
+const dislikeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } }, // remove _id from the array
+    { new: true }
+  )
+    .orFail()
+    .then(() => {
+      res.status(200).send({});
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NO_DATA_ERROR_CODE).send({ message: err.message });
+      }
+      if (err.name === "CastError") {
+        return res
+          .status(INVALID_DATA_ERROR_CODE)
+          .send({ message: err.message });
+      }
+      return res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+    });
+};
+
+module.exports = {
+  createItem,
+  getItems,
+  updateItem,
+  deleteItem,
+  likeItem,
+  dislikeItem,
+};
