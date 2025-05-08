@@ -21,7 +21,7 @@ const createItem = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(INVALID_DATA_ERROR_CODE)
-          .send({ message: 'Invalid name entered' });
+          .send({ message: 'Invalid data entered' });
       }
       return res.status(DEFAULT_ERROR_CODE).send({ message: 'An error has occurred on the server' });
     });
