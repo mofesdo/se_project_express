@@ -4,6 +4,7 @@ const {
   INVALID_DATA_ERROR_CODE,
   NO_DATA_ERROR_CODE,
   DEFAULT_ERROR_CODE,
+  DUPLICATE_ERROR_CODE,
 } = require("../utils/errors");
 
 const getUsers = (req, res) => {
@@ -32,6 +33,9 @@ const createUser = (req, res) => {
           return res
             .status(INVALID_DATA_ERROR_CODE)
             .send({ message: "Invalid data entered" });
+        }
+        if(err.code === 11000){
+            return res.status(DUPLICATE_ERROR_CODE).send({message: "This user already exists"})
         }
         return res
           .status(DEFAULT_ERROR_CODE)
