@@ -32,7 +32,7 @@ const createUser = (req, res) => {
         .then((user) => {
           const userObject = user.toObject();
           delete userObject.password;
-          res.status(201).send({user: userObject});
+          res.status(201).send({ user: userObject });
         })
         .catch((err) => {
           console.error(err);
@@ -86,7 +86,7 @@ const getCurrentUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
-   if (!req.body.email || !req.body.password) {
+  if (!req.body.email || !req.body.password) {
     return res
       .status(INVALID_DATA_ERROR_CODE)
       .send({ message: "Request does not include email or password" });
