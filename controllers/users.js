@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const bcrypt = require("bcryptjs");
 // eslint-disable-next-line import/no-extraneous-dependencies
 const jwt = require("jsonwebtoken");
@@ -111,8 +112,6 @@ const login = (req, res) => {
     });
 };
 const updateCurrentUser = (req, res) => {
-  // const { name, avatar } = req.body;
-  console.log(req.body);
   if (Object.keys(req.body).length === 0) {
     return res
       .status(INVALID_DATA_ERROR_CODE)
@@ -125,7 +124,7 @@ const updateCurrentUser = (req, res) => {
       .send({ message: "Request does not include a name or avatar" });
   }
   const userId = req.user._id;
-  User.findById(userId)
+  return User.findById(userId)
     .orFail()
     .then((user) => {
       // update user's name and avatar

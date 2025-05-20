@@ -50,7 +50,7 @@ const deleteItem = (req, res) => {
           .status(FORBIDDEN_ERROR_CODE)
           .send({ message: "User is not authorized to do this action" });
       }
-      return ClothingItem.findByIdAndDelete(itemId).then((item) => {
+      return ClothingItem.findByIdAndDelete(itemId).then(() => {
         res.status(200).send({ data: item });
       });
     })

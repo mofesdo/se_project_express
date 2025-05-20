@@ -3,7 +3,7 @@ const { JWT_SECRET } = require("../utils/config");
 
 const auth = (req, res, next) => {
   // Get authorization header
-  const authorization = req.headers.authorization;
+  const {authorization} = req.headers;
 
   // Check if header exists and starts with 'Bearer '
   if (!authorization || !authorization.startsWith("Bearer ")) {
@@ -22,7 +22,7 @@ const auth = (req, res, next) => {
     req.user = payload;
 
     // Continue to the next middleware/controller
-    next();
+    return next();
   } catch (err) {
     // If verification fails
     return res.status(401).send({ message: "Invalid token" });
