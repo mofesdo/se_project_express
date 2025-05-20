@@ -30,7 +30,9 @@ const createUser = (req, res) => {
     .then((hashedPassword) => {
       User.create({ name, avatar, email, password: hashedPassword })
         .then((user) => {
-          res.status(201).send(user);
+          const userObject = user.toObject();
+          delete userObject.password;
+          res.status(201).send({user: userObject});
         })
         .catch((err) => {
           console.error(err);
