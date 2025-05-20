@@ -86,6 +86,11 @@ const getCurrentUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
+   if (!req.body.email || !req.body.password) {
+    return res
+      .status(INVALID_DATA_ERROR_CODE)
+      .send({ message: "Request does not include email or password" });
+  }
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
