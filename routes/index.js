@@ -3,11 +3,13 @@ const {NO_DATA_ERROR_CODE} = require('../utils/errors');
 
 const userRouter = require('./users');
 const clothingRouter = require('./clothingItem');
+const {createUser, login} = require('../controllers/users');
 
 router.use('/users', userRouter);
-router.use('/items', clothingRouter)
+router.use('/items', clothingRouter);
 router.use((req, res) => {
     res.status(NO_DATA_ERROR_CODE).json({ error: 'Route not found' });
  });
-
+router.post('/signin', login);
+router.post('/signup', createUser);
 module.exports = router;
