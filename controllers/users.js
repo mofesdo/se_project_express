@@ -87,11 +87,15 @@ const login = (req, res) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // authentication successful! user is in the user variable
-      res.send({
+      const userObject = user.toObject();
+      delete userObject.password;
+
+      res.status(200).send({
        token: jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
-      })
-      })
+      }),
+      user: userObject
+      });
     })
     .catch((err) => {
       // authentication error
