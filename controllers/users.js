@@ -97,7 +97,9 @@ const login = (req, res) => {
       if (err.message === "Incorrect email or password") {
         res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
       }
-      res.status(500);
+      res
+        .status(DEFAULT_ERROR_CODE)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 const updateCurrentUser = (req, res) => {
@@ -118,10 +120,10 @@ const updateCurrentUser = (req, res) => {
     .then((user) => {
       // update user's name and avatar
       if (req.body.name) {
-        user.set('name', req.body.name);
+        user.set("name", req.body.name);
       }
       if (req.body.avatar) {
-        user.set('avatar', req.body.avatar);
+        user.set("avatar", req.body.avatar);
       }
       return user
         .save()
