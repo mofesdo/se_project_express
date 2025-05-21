@@ -1,6 +1,4 @@
-/* eslint-disable no-param-reassign */
 const bcrypt = require("bcryptjs");
-// eslint-disable-next-line import/no-extraneous-dependencies
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const {
@@ -8,21 +6,9 @@ const {
   NO_DATA_ERROR_CODE,
   DEFAULT_ERROR_CODE,
   DUPLICATE_ERROR_CODE,
+  UNAUTHORIZED_ERROR_CODE,
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
-
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => {
-      res.send(users);
-    })
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(DEFAULT_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" });
-    });
-};
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
@@ -108,7 +94,10 @@ const login = (req, res) => {
     })
     .catch((err) => {
       // authentication error
-      res.status(401).send({ message: err.message });
+      if (err.message === "Incorrect email or password") {
+        res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
+      }
+      res.status(500);
     });
 };
 const updateCurrentUser = (req, res) => {
@@ -129,10 +118,10 @@ const updateCurrentUser = (req, res) => {
     .then((user) => {
       // update user's name and avatar
       if (req.body.name) {
-        user.name = req.body.name;
+        user.set('name', req.body.name);
       }
       if (req.body.avatar) {
-        user.avatar = req.body.avatar;
+        user.set('avatar', req.body.avatar);
       }
       return user
         .save()
@@ -169,7 +158,6 @@ const updateCurrentUser = (req, res) => {
     });
 };
 module.exports = {
-  getUsers,
   createUser,
   getCurrentUser,
   login,
