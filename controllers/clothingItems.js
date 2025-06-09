@@ -7,8 +7,6 @@ const {
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
@@ -18,7 +16,7 @@ const createItem = (req, res) => {
       res.send({ data: item });
     })
     .catch((err) => {
-      console.error(err);
+      // .error(err);
       if (err.name === "ValidationError") {
         return res
           .status(INVALID_DATA_ERROR_CODE)
