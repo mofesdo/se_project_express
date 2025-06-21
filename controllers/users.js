@@ -1,16 +1,15 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const {
-  INVALID_DATA_ERROR_CODE,
-  NO_DATA_ERROR_CODE,
-  DEFAULT_ERROR_CODE,
-  DUPLICATE_ERROR_CODE,
-  UNAUTHORIZED_ERROR_CODE,
-} = require("../utils/errors");
+
+const BadRequestError = require("../utils/BadRequestError");
+const UnauthorizedError = require("../utils/UnauthorizedError");
+const NotFoundError = require("../utils/NotFoundError");
+const ConflictError = require("../utils/ConflictError");
+
 const { JWT_SECRET } = require("../utils/config");
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
   bcrypt
     .hash(password, 10)
@@ -22,31 +21,21 @@ const createUser = (req, res) => {
           res.status(201).send({ user: userObject });
         })
         .catch((err) => {
-          console.error(err);
           if (err.name === "ValidationError") {
-            return res
-              .status(INVALID_DATA_ERROR_CODE)
-              .send({ message: "Invalid data entered" });
+            next(new BadRequestError("Invalid data entered"));
+          } else if (err.code === 11000) {
+            next(new ConflictError("This user already exists"));
+          } else {
+            next(err);
           }
-          if (err.code === 11000) {
-            return res
-              .status(DUPLICATE_ERROR_CODE)
-              .send({ message: "This user already exists" });
-          }
-          return res
-            .status(DEFAULT_ERROR_CODE)
-            .send({ message: "An error has occurred on the server" });
         });
     })
     .catch((err) => {
-      console.error(err);
-      return res
-        .status(DEFAULT_ERROR_CODE)
-        .send({ message: "An error has occured on the server" });
+      next(err);
     });
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
     .orFail()
@@ -54,29 +43,20 @@ const getCurrentUser = (req, res) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NO_DATA_ERROR_CODE)
-          .send({ message: "Item not found" });
+        next(new NotFoundError("Item not found"));
+      } else if (err.name === "CastError") {
+        next(new BadRequestError("Invalid data entered"));
+      } else {
+        next(err);
       }
-      if (err.name === "CastError") {
-        return res
-          .status(INVALID_DATA_ERROR_CODE)
-          .send({ message: "Invalid data entered" });
-      }
-      return res
-        .status(DEFAULT_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   if (!req.body.email || !req.body.password) {
-    return res
-      .status(INVALID_DATA_ERROR_CODE)
-      .send({ message: "Request does not include email or password" });
+    next(new BadRequestError("Request does not include email or password"));
   }
 
   return User.findUserByCredentials(email, password)
@@ -95,24 +75,19 @@ const login = (req, res) => {
     .catch((err) => {
       // authentication error
       if (err.message === "Incorrect email or password") {
-        res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
+        next(new UnauthorizedError(err.message));
+      } else {
+        next(err);
       }
-      res
-        .status(DEFAULT_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" });
     });
 };
-const updateCurrentUser = (req, res) => {
+const updateCurrentUser = (req, res, next) => {
   if (Object.keys(req.body).length === 0) {
-    return res
-      .status(INVALID_DATA_ERROR_CODE)
-      .send({ message: "Request body is empty" });
+    next(new BadRequestError("Request body is empty"));
   }
   if (!req.body.name && !req.body.avatar) {
     // body either empty or doesn't contain valid fields
-    return res
-      .status(INVALID_DATA_ERROR_CODE)
-      .send({ message: "Request does not include a name or avatar" });
+    next(new BadRequestError("Request does not include a name or avatar"));
   }
   const userId = req.user._id;
   return User.findById(userId)
@@ -131,32 +106,21 @@ const updateCurrentUser = (req, res) => {
           res.send(updatedUser);
         })
         .catch((err) => {
-          console.error(err);
           if (err.name === "ValidationError") {
-            return res
-              .status(INVALID_DATA_ERROR_CODE)
-              .send({ message: "Invalid data entered" });
+            next(new BadRequestError("Invalid data entered"));
+          } else {
+            next(err);
           }
-          return res
-            .status(DEFAULT_ERROR_CODE)
-            .send({ message: "An error has occurred on the server" });
         });
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NO_DATA_ERROR_CODE)
-          .send({ message: "User not found" });
+        next(new NotFoundError("Item not found"));
+      } else if (err.name === "CastError") {
+        next(new BadRequestError("Invalid data entered"));
+      } else {
+        next(err);
       }
-      if (err.name === "CastError") {
-        return res
-          .status(INVALID_DATA_ERROR_CODE)
-          .send({ message: "Invalid data entered" });
-      }
-      return res
-        .status(DEFAULT_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 module.exports = {
