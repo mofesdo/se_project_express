@@ -1,10 +1,4 @@
 const ClothingItem = require("../models/clothingItems");
-// const {
-//   INVALID_DATA_ERROR_CODE,
-//   NO_DATA_ERROR_CODE,
-//   DEFAULT_ERROR_CODE,
-//   FORBIDDEN_ERROR_CODE,
-// } = require("../utils/errors");
 
 const BadRequestError = require("../utils/BadRequestError");
 // const UnauthorizedError = require("../utils/UnauthorizedError");
@@ -22,18 +16,11 @@ const createItem = (req, res, next) => {
       res.send({ data: item });
     })
     .catch((err) => {
-      // .error(err);
       if (err.name === "ValidationError") {
-        //   // return res
-        //   //   .status(INVALID_DATA_ERROR_CODE)
-        //   //   .send({ message: "Invalid data entered" });
         next(new BadRequestError("Invalid data entered"));
       } else {
         next(err);
       }
-      // return res
-      //   .status(DEFAULT_ERROR_CODE)
-      //   .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -41,10 +28,6 @@ const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((err) => {
-      // console.error(err);
-      // return res
-      //   .status(DEFAULT_ERROR_CODE)
-      //   .send({ message: "An error has occurred on the server" });
       next(err);
     });
 };
@@ -54,9 +37,6 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (req.user._id.toString() !== item.owner.toString()) {
-        // return res
-        //   .status(ForbiddenError)
-        //   .send({ message: "User is not authorized to do this action" });
         next(new ForbiddenError("User is not authorized to do this action"));
       } else {
         return ClothingItem.findByIdAndDelete(itemId).then(() => {
@@ -65,23 +45,13 @@ const deleteItem = (req, res, next) => {
       }
     })
     .catch((err) => {
-      // console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        //   return res
-        //     .status(NO_DATA_ERROR_CODE)
-        //     .send({ message: "Item not found" });
         next(new NotFoundError("Item not found"));
       } else if (err.name === "CastError") {
-        //   return res
-        //     .status(INVALID_DATA_ERROR_CODE)
-        //     .send({ message: err.message });
         next(new BadRequestError("Invalid data entered"));
       } else {
         next(err);
       }
-      // return res
-      //   .status(DEFAULT_ERROR_CODE)
-      //   .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -96,23 +66,13 @@ const likeItem = (req, res, next) => {
       res.status(200).send({ data: item });
     })
     .catch((err) => {
-      // console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        //   return res
-        //     .status(NO_DATA_ERROR_CODE)
-        //     .send({ message: "Item not found" });
         next(new NotFoundError("Item not found"));
       } else if (err.name === "CastError") {
-        //   return res
-        //     .status(INVALID_DATA_ERROR_CODE)
-        //     .send({ message: err.message });
         next(new BadRequestError("Invalid data entered"));
       } else {
         next(err);
       }
-      // return res
-      //   .status(DEFAULT_ERROR_CODE)
-      //   .send({ message: "An error has occurred on the server" });
     });
 };
 const dislikeItem = (req, res, next) => {
@@ -126,23 +86,13 @@ const dislikeItem = (req, res, next) => {
       res.status(200).send({ data: item });
     })
     .catch((err) => {
-      // console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        //   return res
-        //     .status(NO_DATA_ERROR_CODE)
-        //     .send({ message: "Item not found" });
         next(new NotFoundError("Item not found"));
       } else if (err.name === "CastError") {
-        //   return res
-        //     .status(INVALID_DATA_ERROR_CODE)
-        //     .send({ message: err.message });
         next(new BadRequestError("Invalid data entered"));
       } else {
         next(err);
       }
-      // return res
-      //   .status(DEFAULT_ERROR_CODE)
-      //   .send({ message: "An error has occurred on the server" });
     });
 };
 
