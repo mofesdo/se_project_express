@@ -6,6 +6,8 @@ const {
   FORBIDDEN_ERROR_CODE,
 } = require("../utils/errors");
 
+const errorHandler = require('../middlewares/error-handler');
+
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
