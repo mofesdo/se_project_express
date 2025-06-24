@@ -1,6 +1,5 @@
 const { Joi, celebrate } = require("celebrate");
 const validator = require("validator");
-const { createUser } = require("../controllers/users");
 
 const validateURL = (value, helpers) => {
   if (validator.isURL(value)) {
@@ -8,26 +7,6 @@ const validateURL = (value, helpers) => {
   }
   return helpers.error("string.uri");
 };
-
-// router.post('/posts', celebrate({
-//   body: Joi.object().keys({
-//     title: Joi.string().required().min(2).max(30),
-//     text: Joi.string().required().min(2),
-//   }),
-// }), createPost);
-
-// router.delete('/:postId', celebrate({
-//   // validate parameters
-//   params: Joi.object().keys({
-//     postId: Joi.string().alphanum().length(24),
-//   }),
-//   headers: Joi.object().keys({
-//     // validate headers
-//   }),
-//   query: Joi.object().keys({
-//     // validate query
-//   }),
-// }), deletePost);
 
 module.exports.validateCardBody = celebrate({
   body: Joi.object().keys({
