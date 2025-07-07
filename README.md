@@ -5,5 +5,8 @@ The back-end project is focused on creating a server for the WTWR application. U
 
 `npm run dev` — to launch the server with the hot reload feature
 
-### Testing
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+## Deployment
+
+The application is deployed and accessible at:
+- Backend API: https://api.wtwrmofesdo.jumpingcrab.com
+- Frontend: https://wtwrmofesdo.jumpingcrab.com
