@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
-const {UNAUTHORIZED_ERROR_CODE} = require("../utils/errors");
+// const {UNAUTHORIZED_ERROR_CODE} = require("../utils/errors");
+const UnauthorizedError = require("../utils/UnauthorizedError");
 
 const auth = (req, res, next) => {
   // Get authorization header
@@ -8,7 +9,7 @@ const auth = (req, res, next) => {
 
   // Check if header exists and starts with 'Bearer '
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    return res.status(UNAUTHORIZED_ERROR_CODE).send({ message: "Authorization required" });
+    return next(new UnauthorizedError("Authorization required"));
   }
 
   // Get the token (remove 'Bearer ' from the header)
@@ -26,7 +27,7 @@ const auth = (req, res, next) => {
     return next();
   } catch (err) {
     // If verification fails
-    return res.status(UNAUTHORIZED_ERROR_CODE).send({ message: "Invalid token" });
+    return next(new UnauthorizedError("Invalid token"));
   }
 };
 module.exports = auth;
