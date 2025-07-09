@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const { NO_DATA_ERROR_CODE } = require("../utils/errors");
 const NotFoundError = require("../utils/NotFoundError");
 
 const userRouter = require("./users");
