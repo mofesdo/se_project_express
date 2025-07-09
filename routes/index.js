@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const { NO_DATA_ERROR_CODE } = require("../utils/errors");
+const NotFoundError = require("../utils/NotFoundError");
 
 const userRouter = require("./users");
 const clothingRouter = require("./clothingItem");
@@ -13,7 +14,7 @@ router.use("/items", clothingRouter);
 router.post("/signin", validateUserAuth, login);
 router.post("/signup", validateUserBody, createUser);
 
-router.use((req, res) => {
-  res.status(NO_DATA_ERROR_CODE).json({ error: "Route not found" });
+router.use((req, res, next) => {
+  next(new NotFoundError("Route not found"));
 });
 module.exports = router;
